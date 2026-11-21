@@ -1,0 +1,22 @@
+# секреты: НИКОГДА не попадают в git
+.env
+.env.*
+!.env.example
+
+# виртуальное окружение (его можно пересоздать из requirements.txt)
+.venv/
+venv/
+
+# служебное от Python
+__pycache__/
+*.pyc
+
+# локальные базы и резервные копии
+*.db
+*.sqlite3
+*.sql
+
+# редакторы и система
+.vscode/
+.idea/
+.DS_Store
