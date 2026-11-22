@@ -1,0 +1,16 @@
+# Секреты не должны попасть в образ
+.env
+.env.*
+
+# Мусор и то, что пересоздаётся внутри образа
+.git
+.venv
+venv
+__pycache__
+*.pyc
+*.db
+*.sql
+.vscode
+.idea
+frontend/node_modules
+frontend/dist

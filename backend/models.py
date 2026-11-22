@@ -2,7 +2,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, String, Table, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from database import Base
+from backend.database import Base
 
 # Вспомогательная таблица для связи "многие ко многим":
 # у фанфика много тегов, и один тег бывает у многих фанфиков.

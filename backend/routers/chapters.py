@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from database import get_db
-from models import Chapter, Work
-from schemas import ChapterOut
+from backend.database import get_db
+from backend.models import Chapter, Work
+from backend.schemas import ChapterOut
 
 router = APIRouter(prefix="/works/{work_id}/chapters", tags=["chapters"])
 

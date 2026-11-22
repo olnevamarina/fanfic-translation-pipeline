@@ -6,17 +6,43 @@
 # виртуальное окружение (его можно пересоздать из requirements.txt)
 .venv/
 venv/
+env/
 
 # служебное от Python
 __pycache__/
-*.pyc
+*.py[cod]
+*$py.class
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# Node / фронтенд
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+static/
+*.tsbuildinfo
 
 # локальные базы и резервные копии
 *.db
+*.sqlite
 *.sqlite3
+*.db-journal
+*.db-wal
 *.sql
+*.bak
+
+# логи и временные файлы
+*.log
+*.tmp
+*.swp
+*~
 
 # редакторы и система
 .vscode/
 .idea/
 .DS_Store
+Thumbs.db
