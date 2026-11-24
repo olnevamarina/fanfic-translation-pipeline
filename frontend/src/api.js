@@ -8,3 +8,14 @@ export async function fetchWorks(signal) {
   if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
   return res.json();
 }
+export async function fetchWork(workId, signal) {
+  const res = await fetch(`${API_URL}/works/${workId}`, { signal });
+  if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
+  return res.json();
+}
+
+export async function fetchChapters(workId, signal) {
+  const res = await fetch(`${API_URL}/works/${workId}/chapters`, { signal });
+  if (!res.ok) throw new Error(`Ошибка сервера: ${res.status}`);
+  return res.json();
+}

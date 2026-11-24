@@ -1,3 +1,4 @@
+"""РОУТЕРЫ: адреса API для глав фанфиков (загрузить, список, прочитать)."""
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
@@ -32,11 +33,11 @@ def upload_chapter(
         raise HTTPException(413, "Файл слишком большой (максимум 500 КБ)")
 
     try:
-        text = raw.decode("utf-8-sig")  # utf-8-sig убирает невидимую метку, которую ставит блокнот Windows
+        text = raw.decode("utf-8-sig")  # utf-8-sig убирает BOM, который добавляет Блокнот Windows
     except UnicodeDecodeError:
         raise HTTPException(400, "Сохраните файл в кодировке UTF-8")
 
-    text = text.replace("\r\n", "\n").strip()  # единый вид переносов строк
+    text = text.replace("\r\n", "\n").strip()
     if not text:
         raise HTTPException(400, "Файл пустой")
 
@@ -44,7 +45,7 @@ def upload_chapter(
     chapter = Chapter(
         work_id=work_id,
         number=last_number + 1,
-        title=title or Path(file.filename).stem,  # если название не дали, берём имя файла
+        title=title.strip() or Path(file.filename).stem,
         text=text,
     )
     db.add(chapter)
@@ -53,9 +54,23 @@ def upload_chapter(
     return chapter
 
 
+@router.get("", response_model=list[ChapterOut])
+def list_chapters(work_id: int, db: Session = Depends(get_db)):
+    """Возвращает все главы фанфика, отсортированные по номеру."""
+    if db.get(Work, work_id) is None:
+        raise HTTPException(404, "Фанфик не найден")
+    return db.scalars(
+        select(Chapter)
+        .where(Chapter.work_id == work_id)
+        .order_by(Chapter.number)
+    ).all()
+
+
 @router.get("/{number}", response_model=ChapterOut)
 def get_chapter(work_id: int, number: int, db: Session = Depends(get_db)):
-    chapter = db.scalar(select(Chapter).where(Chapter.work_id == work_id, Chapter.number == number))
+    chapter = db.scalar(
+        select(Chapter).where(Chapter.work_id == work_id, Chapter.number == number)
+    )
     if chapter is None:
         raise HTTPException(404, "Глава не найдена")
     return chapter

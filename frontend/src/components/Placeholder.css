@@ -1,0 +1,16 @@
+.placeholder {
+  display: grid;
+  place-items: center;
+  padding: 8px;
+  border: 1px dashed rgba(120, 100, 140, 0.5);
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(120, 100, 140, 0.1),
+    rgba(120, 100, 140, 0.1) 10px,
+    rgba(120, 100, 140, 0.2) 10px,
+    rgba(120, 100, 140, 0.2) 20px
+  );
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-align: center;
+}

@@ -5,27 +5,54 @@ Pydantic сам проверяет входящие данные и возвра
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
+from datetime import datetime
+from typing import Literal
+from pydantic import BaseModel, ConfigDict
+
+WorkStatus = Literal["В процессе", "Завершено", "Заморожено"]
+AgeRating = Literal["18+", ""]
+
+def normalize_age_rating(value: str | None) -> str:
+    if not value:
+        return ""
+    cleaned = value.strip()
+    if cleaned == "18+":
+        return "18+"
+    raise ValueError("age_rating must be '18+' or empty")
+class TagOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    name: str
+
 class WorkCreate(BaseModel):
-    """Что присылает клиент, когда создаёт или меняет фанфик (id тут нет: его выдаёт сервер)."""
-    title: str = Field(min_length=1, max_length=300)
+    title: str
     description: str = ""
+    status: WorkStatus = "Завершено"
+    age_rating: AgeRating = ""
     tags: list[str] = []
 
 
+class WorkUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    status: WorkStatus | None = None
+    age_rating: AgeRating | None = None
+    tags: list[str] | None = None
+
+
 class WorkOut(BaseModel):
-    """Что сервер отдаёт клиенту."""
-    model_config = ConfigDict(from_attributes=True)  # разрешает читать данные из объекта базы
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     title: str
     description: str
-    tags: list[str]
+    status: str
+    age_rating: str
+    created_at: datetime
+    last_updated_at: datetime
+    tags: list[TagOut] = []
 
-    @field_validator("tags", mode="before")
-    @classmethod
-    def tags_to_names(cls, value):
-        # В базе теги - это объекты Tag, а наружу отдаём просто список названий
-        return [t.name if hasattr(t, "name") else t for t in value]
 class ChapterOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
@@ -34,3 +61,4 @@ class ChapterOut(BaseModel):
     number: int
     title: str
     text: str
+    created_at: datetime

@@ -1,11 +1,11 @@
 """РОУТЕРЫ: адреса API для фанфиков (создать, прочитать, изменить, удалить)."""
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from backend.database import get_db
 from backend.models import Tag, Work
-from backend.schemas import WorkCreate, WorkOut
+from backend.schemas import WorkCreate, WorkOut, WorkUpdate
 
 router = APIRouter(prefix="/works", tags=["works"])
 
@@ -23,7 +23,8 @@ def get_or_create_tags(db: Session, names: list[str]) -> list[Tag]:
 
 
 def get_work_or_404(db: Session, work_id: int) -> Work:
-    work = db.get(Work, work_id)
+    query = select(Work).options(selectinload(Work.chapters)).where(Work.id == work_id)
+    work = db.scalar(query)
     if work is None:
         raise HTTPException(status_code=404, detail="Фанфик не найден")
     return work
@@ -34,18 +35,20 @@ def create_work(data: WorkCreate, db: Session = Depends(get_db)):
     work = Work(
         title=data.title,
         description=data.description,
+        status=data.status,
+        age_rating=data.age_rating,
         tags=get_or_create_tags(db, data.tags),
     )
     db.add(work)
     db.commit()
-    db.refresh(work)  # подтягиваем id, который выдала база
+    db.refresh(work)
     return work
 
 
 @router.get("", response_model=list[WorkOut])
 def list_works(tag: str | None = None, db: Session = Depends(get_db)):
     """Список всех фанфиков. Можно отфильтровать: /works?tag=Драма"""
-    query = select(Work).order_by(Work.id)
+    query = select(Work).options(selectinload(Work.chapters)).order_by(Work.id)
     if tag:
         query = query.where(Work.tags.any(Tag.name == tag))
     return db.scalars(query).all()
@@ -57,12 +60,21 @@ def get_work(work_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{work_id}", response_model=WorkOut)
-def update_work(work_id: int, data: WorkCreate, db: Session = Depends(get_db)):
-    """Заменяет данные фанфика новыми (присылать нужно все поля)."""
+def update_work(work_id: int, data: WorkUpdate, db: Session = Depends(get_db)):
+    """Обновляет поля фанфика (поддерживает частичное обновление через WorkUpdate)."""
     work = get_work_or_404(db, work_id)
-    work.title = data.title
-    work.description = data.description
-    work.tags = get_or_create_tags(db, data.tags)
+
+    if data.title is not None:
+        work.title = data.title
+    if data.description is not None:
+        work.description = data.description
+    if data.status is not None:
+        work.status = data.status
+    if data.age_rating is not None:
+        work.age_rating = data.age_rating
+    if data.tags is not None:
+        work.tags = get_or_create_tags(db, data.tags)
+
     db.commit()
     db.refresh(work)
     return work

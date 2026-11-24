@@ -1,0 +1,39 @@
+/* Стили одной работы (WorkItem.jsx) */
+
+/* grid с двумя колонками: текст слева, обложка справа шириной 150px */
+.work-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 150px;
+  gap: 20px;
+  padding: 16px 16px 16px 20px;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.work-item-title { margin: 0 0 10px; font: 700 clamp(1.3rem, 2.2vw, 1.7rem)/1.25 var(--font-head); }
+.work-item-title a { text-decoration: none; }
+.work-item-title a:hover { text-decoration: underline; }
+
+.work-tags.name { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.work-tag.name { padding: 1px 10px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); font-size: 0.9rem; }
+
+/* Описание под пунктирной линией, обрезается на 4 строках */
+.work-item-description {
+  margin: 12px 0 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  white-space: pre-line; /* сохраняет абзацы (переносы \n из базы) */
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.work-item-cover { align-self: start; aspect-ratio: 3 / 4; width: 100%; border-radius: 4px; }
+
+@media (max-width: 640px) {
+  .work-item { grid-template-columns: 1fr; }
+  .work-item-cover { order: -1; width: 140px; }
+}

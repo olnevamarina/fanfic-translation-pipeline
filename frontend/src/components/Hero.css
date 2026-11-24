@@ -1,0 +1,32 @@
+/* Стили баннера (Hero.jsx) */
+
+.hero {
+  background:
+    radial-gradient(circle at 15% 30%, #3b2559 0%, transparent 55%),
+    radial-gradient(circle at 85% 70%, #2d1c45 0%, transparent 50%),
+    var(--header-bg);
+  color: #fff;
+  /* Когда будет картинка: background-image: url("/hero.jpg"); background-size: cover; */
+}
+
+/* grid: три колонки. Текст слева, баннер в середине, вертикальная надпись справа */
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 1.4fr) auto;
+  align-items: center;
+  gap: 24px;
+  max-width: var(--page-width);
+  min-height: 260px;
+  margin: 0 auto;
+  padding: 36px 20px;
+}
+
+.hero-tagline { margin: 0; font: 400 clamp(1.5rem, 3vw, 2.2rem)/1.35 var(--font-script); }
+.hero-banner { min-height: 160px; border-radius: 4px; color: var(--header-muted); }
+.hero-jp { margin: 0; font-size: 1.6rem; letter-spacing: 0.3em; writing-mode: vertical-rl; opacity: 0.85; }
+
+@media (max-width: 800px) {
+  .hero-inner { grid-template-columns: 1fr; min-height: 0; }
+  .hero-banner { min-height: 120px; }
+  .hero-jp { display: none; }
+}

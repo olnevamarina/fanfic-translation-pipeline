@@ -1,0 +1,2 @@
+/* Стили списка (WorkList.jsx): работы идут друг под другом */
+.work-list { display: grid; gap: 16px; margin: 0; padding: 0; list-style: none; }
