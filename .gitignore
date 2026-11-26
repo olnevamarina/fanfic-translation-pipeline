@@ -46,3 +46,4 @@ static/
 .idea/
 .DS_Store
 Thumbs.db
+backend/services/promptGenerator.py

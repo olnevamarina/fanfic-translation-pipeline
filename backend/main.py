@@ -10,6 +10,9 @@ import backend.models as models  # noqa: F401  (нужен, чтобы табл�
 from backend.database import Base, engine
 from backend.routers import chapters
 from backend.routers import works
+from backend.routers import chapters, translations, works  # пример состава роутеров
+
+
 
 
 @asynccontextmanager
@@ -29,7 +32,7 @@ app = FastAPI(
 # Весь API находится под /api, а всё остальное - это страницы сайта
 app.include_router(works.router, prefix="/api")
 app.include_router(chapters.router, prefix="/api")
-
+app.include_router(translations.router, prefix="/api")
 
 @app.get("/api/health", include_in_schema=False)
 def health():

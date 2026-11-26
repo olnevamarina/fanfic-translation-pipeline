@@ -1,5 +1,5 @@
 """МОДЕЛИ: как данные хранятся в базе (таблицы)."""
-from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, UniqueConstraint
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Table, Text, UniqueConstraint, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from datetime import datetime, timezone
 from backend.database import Base
@@ -58,3 +58,23 @@ class Chapter(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
     work: Mapped["Work"] = relationship(back_populates="chapters")
+
+
+
+class WorkTranslationPrompt(Base):
+    __tablename__ = "work_translation_prompts"
+    __table_args__ = (
+        UniqueConstraint("work_id", "target_language", name="uq_work_target_language"),
+    )
+
+    id = Column(Integer, primary_key=True, index=True)
+    work_id = Column(Integer, ForeignKey("works.id", ondelete="CASCADE"), nullable=False, index=True)
+    target_language = Column(String(64), nullable=False)
+    system_prompt = Column(Text, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
